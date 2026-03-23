@@ -1,0 +1,104 @@
+from flask import Flask, render_template, request, redirect, url_for, session
+
+app = Flask(__name__)
+app.secret_key = '1234'
+# ... (configuración de tu app y conexión a MariaDB) ...
+@app.route('/')
+def principal():
+    return render_template('login.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        # 1. Recibimos los parámetros exactos del formulario HTML
+        usuario_id = request.form.get('id')
+        usuario_pass = request.form.get('password')
+
+        # 2. Aquí va la consulta a tu base de datos MariaDB
+        # cursor.execute("SELECT * FROM Usuarios WHERE ID_Usuario = %s AND Password = %s", (usuario_id, usuario_pass))
+        # usuario = cursor.fetchone()
+
+        # Simulación de validación para probar que funciona
+        if usuario_id == 'admin' and usuario_pass == '1234':
+            session['logeado'] = True
+            session['id'] = usuario_id
+            return redirect(url_for('admin_dashboard')) # Redirige a la pantalla principal de admin
+        elif usuario_id == 'doctor' and usuario_pass == '1234':
+            session['logeado'] = True
+            session['id'] = usuario_id
+            return redirect(url_for('clinica_dashboard')) # Redirige a la pantalla principal de clinica
+        elif usuario_id == 'paciente' and usuario_pass == '1234':
+            session['logeado'] = True
+            session['id'] = usuario_id
+            return redirect(url_for('publica_dashboard')) # Redirige a la pantalla principal de clinica
+        else:
+            error = "ID o Contraseña incorrectos. Intenta de nuevo."
+
+    # Si es método GET, o si hubo error, volvemos a mostrar la página de login
+    return render_template('login.html', error=error)
+
+
+@app.route('/adminDashboard')
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
+
+@app.route('/adminPaciente')
+def admin_obtenerPacientes():
+    # Codigo de la bd donde obtengo la informacion de los pacientes
+    return render_template('admin_pacientes.html')
+
+@app.route('/adminBeacons')
+def admin_obtenerBeacons():
+    # Codigo de la bd donde obtengo la informacion de los beacons
+    return render_template('admin_beacons.html')
+
+@app.route('/adminSesiones')
+def admin_obtenerSesiones():
+    # Codigo de la bd donde obtengo la informacion de los beacons
+    return render_template('admin_sesiones.html')
+
+@app.route('/adminReportes')
+def admin_reportes():
+    return render_template('admin_reportes.html')
+
+@app.route('/adminTerapeutas')
+def admin_obtenerTerapeutas():
+    # Codigo de la bd donde obtengo la informacion de los pacientes
+    return render_template('admin_terapeutas.html')
+
+@app.route('/adminPaciente/eliminar/<int:id_paciente>', methods=['POST'])
+def admin_eliminar_paciente(id_paciente):
+    # Lógica para eliminar el registro
+    return redirect(url_for('obtenerPacientes'))
+
+@app.route('/clinicaDashboard')
+def clinica_dashboard():
+    return render_template('clinica_dashboard.html')
+
+@app.route('/clinicaPacientes')
+def clinica_obtenerPacientes():
+    return render_template('clinica_pacientes.html')
+
+@app.route('/clinicaSesiones')
+def clinica_obtenerSesiones():
+    return render_template('clinica_sesiones.html')
+
+@app.route('/clinicaSesionesDomicilio')
+def clinica_sesionesDomicilio():
+    return render_template('clinica_domicilio.html')
+
+@app.route('/sesion/iniciar/')
+def clinica_expedienteSesion():
+    paciente = None
+    return render_template('clinica_expediente_sesion.html', paciente=paciente)
+
+@app.route('/paciente/')
+def publica_dashboard():
+    paciente = None
+    return render_template('publica_dashboard.html', paciente=paciente)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+

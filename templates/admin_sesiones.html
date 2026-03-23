@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Sesiones - Rehab IoT</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/admin_base.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/admin_directorio.css')}}">
+</head>
+<body>
+
+    <!-- Inicio de SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h1> Rehab IoT <h1>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{{url_for('admin_dashboard')}}"><i class="fa-solid fa-arrows-to-circle"></i> Dashboard</a></li>
+        <li><a href="{{url_for('admin_obtenerPacientes')}}"> <i class="fa-solid fa-clipboard-user"></i>Pacientes</a></li>
+        <li><a href="{{url_for('admin_obtenerTerapeutas')}}"> <i class="fa-solid fa-user-group"></i> Terapeutas</a></li>
+        <li><a href="{{url_for('admin_obtenerSesiones')}}" class="active"> <i class="fa-solid fa-house-chimney-user"></i> Sesiones </a></li>
+        <li><a href="{{url_for('admin_obtenerBeacons')}}"><i class="fa-solid fa-cubes-stacked"></i> Zonas (Beacons)</a></li>
+        <li><a href="{{url_for('admin_reportes')}}"> <i class="fa-solid fa-book"></i> Reportes </a></li>
+        <li><a href="{{url_for('principal')}}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+    <!-- Fin de SIDEBAR -->
+
+    <main class="main-content">
+        <div class="controls">
+            <h2>Historial de Sesiones</h2>
+            <input type="text" id="searchInput" class="search-box" placeholder="Buscar por ID, fecha, tipo o notas..." onkeyup="filtrarTabla()">
+            <a href="/sesion/nueva" class="btn btn-add">+ Registrar Sesión</a>
+        </div>
+
+        <table id="sesionesTable">
+            <thead>
+                <tr>
+                    <th onclick="ordenarTabla(0)">ID ⇕</th>
+                    <th onclick="ordenarTabla(1)">Fecha y Horario ⇕</th>
+                    <th onclick="ordenarTabla(2)">Detalles de Sesión ⇕</th>
+                    <th onclick="ordenarTabla(3)">Asistencia ⇕</th>
+                    <th>Observaciones Clínicas</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in sesiones %}
+                <tr>
+                    <td><strong>{{ s.id_sesion }}</strong></td>
+                    
+                    <td>
+                        <i class="fa-regular fa-calendar" style="color: var(--primary-blue);"></i> {{ s.fecha }}
+                        <span class="sub-text">
+                            <i class="fa-regular fa-clock"></i> {{ s.hora_inicio }} - {{ s.hora_fin }}
+                        </span>
+                    </td>
+                    
+                    <td>
+                        <strong>{{ s.tipo_sesion }}</strong>
+                        <span class="sub-text badge badge-metodo">
+                            {% if s.metodo_registro == 'NFC' %}
+                                <i class="fa-solid fa-nfc-symbol"></i> 
+                            {% elif s.metodo_registro == 'Beacon' %}
+                                <i class="fa-brands fa-bluetooth-b"></i> 
+                            {% else %}
+                                <i class="fa-solid fa-keyboard"></i> 
+                            {% endif %}
+                            {{ s.metodo_registro }}
+                        </span>
+                    </td>
+                    
+                    <td>
+                        {% if s.asistencia == 'Presente' %}
+                            <span class="badge badge-presente">Presente</span>
+                        {% elif s.asistencia == 'Ausente' %}
+                            <span class="badge badge-ausente">Ausente</span>
+                        {% else %}
+                            <span class="badge badge-pendiente">{{ s.asistencia }}</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td>
+                        <span class="obs-text" title="{{ s.observaciones_clinicas }}">
+                            {{ s.observaciones_clinicas or 'Sin observaciones registradas.' }}
+                        </span>
+                    </td>
+                    
+                    <td class="action-btns">
+                        <a href="/sesion/editar/{{ s.id_sesion }}" class="btn btn-edit">Editar</a>
+                        <form action="/sesion/eliminar/{{ s.id_sesion }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar la sesión {{ s.id_sesion }}?');">
+                            <button type="submit" class="btn btn-delete">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        No hay sesiones registradas. Las lecturas de NFC aparecerán aquí automáticamente.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        // 1. Filtro AJAX-like (Buscador)
+        function filtrarTabla() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let filas = document.querySelectorAll("#sesionesTable tbody tr");
+
+            filas.forEach(fila => {
+                // Si la fila dice "No hay sesiones", la ignoramos para no romperla
+                if (fila.cells.length === 1) return; 
+                
+                let textoFila = fila.textContent.toLowerCase();
+                fila.style.display = textoFila.includes(input) ? "" : "none";
+            });
+        }
+
+        // 2. Ordenamiento de columnas
+        function ordenarTabla(n) {
+            let tabla = document.getElementById("sesionesTable");
+            let tbody = tabla.querySelector("tbody");
+            let filas = Array.from(tbody.querySelectorAll("tr"));
+            
+            // Si la tabla está vacía o tiene el mensaje "No hay sesiones", no hacemos nada
+            if (filas.length === 0 || (filas.length === 1 && filas[0].cells.length === 1)) return;
+
+            let ascendente = tabla.dataset.orden === "asc";
+
+            filas.sort((a, b) => {
+                let celdaA = a.cells[n].innerText.toLowerCase();
+                let celdaB = b.cells[n].innerText.toLowerCase();
+                if (celdaA < celdaB) return ascendente ? -1 : 1;
+                if (celdaA > celdaB) return ascendente ? 1 : -1;
+                return 0;
+            });
+
+            tabla.dataset.orden = ascendente ? "desc" : "asc";
+            filas.forEach(fila => tbody.appendChild(fila));
+        }
+    </script>
+</body>
+</html>

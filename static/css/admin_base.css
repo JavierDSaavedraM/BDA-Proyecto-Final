@@ -1,0 +1,90 @@
+/* 1. Reset Básico y Paleta de Colores */
+:root {
+  --primary-blue: #2A4365; /* Azul Pizarra profundo (Transmite mucha autoridad y elegancia) */
+  --hover-blue: #1A365D;   /* Azul Noche para los hover */
+  --accent-teal: #4FD1C5;  /* Turquesa/Menta vibrante (Da un toque muy tecnológico) */
+  --bg-gray: #F7FAFC;      /* Gris neutro muy limpio */
+  --text-dark: #1A202C;    /* Gris asfalto casi negro */
+  --text-light: #718096;   /* Gris neutro para subtítulos */
+  --white: #FFFFFF;
+  --success: #38A169;      /* Verde clínico */
+  --warning: #D69E2E;      /* Naranja/Amarillo estándar */
+  --border-color: #E2E8F0; /* Bordes sutiles */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 2. Fondo de la página y centrado con Flexbox */
+body {
+  background-color: var(--bg-gray); /* Fondo gris muy suave para descansar la vista */
+  height: 100vh;
+  color: var(--text-dark); /* Texto gris oscuro, mejor contraste que el negro puro */
+}
+
+/* 3. Menú Lateral (Sidebar) */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(
+  180deg, 
+  var(--primary-blue) 0%, 
+  color-mix(in srgb, var(--hover-blue) 80%, black) 100%
+  );
+  box-shadow: 4px 0 15px rgba(0,0,0,0.1); /* Una sombra lateral ayuda a separarlo del fondo */
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.nav-links {
+  list-style: none;
+  padding: 20px 0;
+  flex-grow: 1;
+}
+
+.nav-links li a {
+  display: block;
+  padding: 15px 25px;
+  color: var(--white);
+  text-decoration: none;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.nav-links li a:hover, .nav-links li a.active {
+  background-color: var(--hover-blue);
+  border-left: 4px solid var(--accent-teal);
+}
+
+/* 3. Guia para contenido*/
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+/* 4. Botones*/
+.btn { 
+  padding: 8px 16px; 
+  border-radius: 4px; 
+  color: var(--white); 
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+.btn-add { background-color: var(--primary-blue); }
+.btn-edit { background-color: var(--accent-teal); }
+.btn-delete { background-color: var(--danger-red); }

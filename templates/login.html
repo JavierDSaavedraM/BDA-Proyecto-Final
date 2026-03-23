@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Centro de Rehabilitación</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/base.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/login.css')}}">
+    <link rel="styleslesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <h2 class="login-title">Acceso al Sistema</h2>
+        
+        {% if error %}
+        <div class="alert-error">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="userId" class="form-label"><i class="fa-solid fa-user"></i> ID de Usuario</label>
+                <input type="text" id="userId" name="id" class="form-control" placeholder="Ej. ADM-001" required autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="userPassword" class="form-label"> <i class="fa-solid fa-lock"></i> Contraseña</label>
+                <input type="password" id="userPassword" name="password" class="form-control" placeholder="••••••••" value="1234" required>
+            </div>
+            
+            <button type="submit" class="btn-submit">Ingresar</button>
+        </form>
+        
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pacientes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/admin_base.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/admin_directorio.css')}}">
+  </head>
+  <body>
+
+
+    <!-- Inicio de SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h1> Rehab IoT <h1>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{{url_for('admin_dashboard')}}" ><i class="fa-solid fa-arrows-to-circle"></i> Dashboard</a></li>
+        <li><a href="{{url_for('admin_obtenerPacientes')}}"class="active"> <i class="fa-solid fa-clipboard-user"></i>Pacientes</a></li>
+        <li><a href="{{url_for('admin_obtenerTerapeutas')}}"> <i class="fa-solid fa-user-group"></i> Terapeutas</a></li>
+        <li><a href="{{url_for('admin_obtenerSesiones')}}"> <i class="fa-solid fa-house-chimney-user"></i> Sesiones </a></li>
+        <li><a href="{{url_for('admin_obtenerBeacons')}}"><i class="fa-solid fa-cubes-stacked"></i> Zonas (Beacons)</a></li>
+        <li><a href="{{url_for('admin_reportes')}}"> <i class="fa-solid fa-book"></i> Reportes </a></li>
+        <li><a href="{{url_for('principal')}}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+    <!-- Fin de SIDEBAR -->
+
+    <main class="main-content">
+      <div class="controls">
+        <h2>Directorio de Pacientes</h2>
+        <input type="text" id="searchInput" class="search-box" placeholder="Buscar por nombre, ID o diagnóstico..." onkeyup="filtrarTabla()">
+        <a href="/paciente/nuevo" class="btn btn-add">+ Nuevo Paciente</a>
+      </div>
+
+      <table id="pacientesTable">
+        <thead> 
+          <tr>
+            <th onclick="ordenarTabla(0)">ID ⇕</th>
+            <th onclick="ordenarTabla(1)">Paciente ⇕</th>
+            <th onclick="ordenarTabla(2)">Diagnóstico y Antecedentes ⇕</th>
+            <th>Contacto</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in pacientes %}
+          <tr>
+            <td><strong>{{ p.id_paciente }}</strong></td>
+            <td>
+              {{ p.nombre }} {{ p.apellido_paterno }} {{ p.apellido_materno or '' }}
+              <span class="sub-text">Sexo: {{ p.sexo }} | Nac: {{ p.fecha_nacimiento }}</span>
+            </td>
+            <td>
+              <strong>{{ p.diagnostico_principal }}</strong>
+              <span class="sub-text">{{ p.antecedentes_medicos }}</span>
+            </td>
+            <td>
+              {{ p.telefono }}
+              <span class="sub-text">{{ p.correo }}</span>
+            </td>
+            <td class="action-btns">
+              <a href="/paciente/editar/{{ p.id_paciente }}" class="btn btn-edit">Editar</a>
+
+              <form action="/paciente/eliminar/{{ p.id_paciente }}" method="POST" onsubmit="return confirm('¿Eliminar permanentemente al paciente {{ p.nombre }}?');">
+                <button type="submit" class="btn btn-delete">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 30px;">No hay pacientes registrados en la admin_base de datos.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </main>
+    <script>
+      // 1. Buscador en tiempo real (Filtro AJAX-like sin recargar)
+      function filtrarTabla() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let filas = document.querySelectorAll("#pacientesTable tbody tr");
+
+        filas.forEach(fila => {
+          let textoFila = fila.textContent.toLowerCase();
+          fila.style.display = textoFila.includes(input) ? "" : "none";
+        });
+      }
+
+      // 2. Ordenamiento de columnas
+      function ordenarTabla(n) {
+        let tabla = document.getElementById("pacientesTable");
+        let filas = Array.from(tabla.querySelectorAll("tbody tr"));
+        let ascendente = tabla.dataset.orden === "asc";
+
+        filas.sort((a, b) => {
+          let celdaA = a.cells[n].innerText.toLowerCase();
+          let celdaB = b.cells[n].innerText.toLowerCase();
+          if (celdaA < celdaB) return ascendente ? -1 : 1;
+          if (celdaA > celdaB) return ascendente ? 1 : -1;
+          return 0;
+        });
+
+        tabla.dataset.orden = ascendente ? "desc" : "asc";
+        filas.forEach(fila => tabla.querySelector("tbody").appendChild(fila));
+      }
+    </script>
+  </body>
+</html>

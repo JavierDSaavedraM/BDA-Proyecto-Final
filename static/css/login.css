@@ -1,0 +1,97 @@
+/* 1. Fondo de la página y centrado con Flexbox */
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dark); /* Texto gris oscuro, mejor contraste que el negro puro */
+}
+
+/* 3. La tarjeta principal (Contenedor del formulario) */
+.login-container {
+  background-color: var(--white);
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* Sombra suave y elegante */
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* 4. Alerta de error (Se activa con Jinja2) */
+.alert-error {
+  background-color: #FED7D7;
+  color: #C53030;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 14px;
+  border: 1px solid #FEB2B2;
+}
+
+/* 5. Estilos de los inputs (Cajas de texto) */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+/* Efecto cuando el usuario hace clic en el input */
+.form-control:focus {
+  outline: none;
+  border-color: var(--hover-blue);
+  box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.2);
+}
+
+/* 6. Botón principal */
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--hover-blue); /* Azul médico */
+  color: var(--white);
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.btn-submit:hover {
+  background-color: #1A4971; /* Azul más oscuro al pasar el mouse */
+}
+
+/* 7. Enlace inferior */
+.forgot-password {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  color: #38B2AC; /* Verde azulado (Teal) */
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terapias a Domicilio - Rehab IoT</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #2B6CB0; --hover-blue: #1A4971; --accent-teal: #38B2AC;
+            --bg-gray: #F7FAFC; --text-dark: #2D3748; --text-light: #718096; 
+            --white: #FFFFFF; --border-color: #E2E8F0;
+            --success-green: #48BB78; --warning-yellow: #D69E2E; --danger-red: #E53E3E;
+        }
+
+        body { background-color: var(--bg-gray); color: var(--text-dark); padding: 0; margin: 0; font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar del Terapeuta */
+        .sidebar { width: 250px; background-color: var(--white); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .sidebar-header h1 { color: var(--primary-blue); font-size: 22px; margin: 0; }
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li a { display: flex; align-items: center; padding: 15px 20px; color: var(--text-light); text-decoration: none; font-weight: 500; transition: 0.3s; }
+        .nav-links li a i { width: 25px; font-size: 18px; }
+        .nav-links li a:hover, .nav-links li a.active { background-color: var(--primary-blue); color: var(--white); }
+        
+        /* Contenido Principal */
+        .main-content { flex-grow: 1; padding: 30px; overflow-y: auto; }
+        
+        .header-actions { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; }
+        .header-actions h2 { margin: 0; font-size: 24px; color: var(--text-dark); }
+        .header-actions p { margin: 5px 0 0 0; color: var(--text-light); font-size: 14px; }
+        
+        .btn-new { background-color: var(--primary-blue); color: var(--white); padding: 10px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; transition: 0.3s; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-new:hover { background-color: var(--hover-blue); }
+
+        /* KPIs Logísticos */
+        .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
+        .kpi-card { background: var(--white); padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--primary-blue); }
+        .kpi-icon { background: #EDF2F7; color: var(--primary-blue); width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .kpi-info h4 { margin: 0; font-size: 12px; color: var(--text-light); text-transform: uppercase; }
+        .kpi-info .value { margin: 2px 0 0 0; font-size: 20px; font-weight: bold; color: var(--text-dark); }
+
+        /* Grid Principal de Logística */
+        .logistics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        
+        /* Lista de Rutas */
+        .route-card { background: var(--white); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 20px; margin-bottom: 15px; border: 1px solid var(--border-color); position: relative; overflow: hidden; }
+        .route-card.active { border-color: var(--accent-teal); box-shadow: 0 0 0 2px rgba(56, 178, 172, 0.2); }
+        .route-card.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background-color: var(--accent-teal); }
+        
+        .route-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px; }
+        .route-time { font-weight: bold; color: var(--primary-blue); font-size: 16px; }
+        .route-status { font-size: 11px; padding: 4px 8px; border-radius: 10px; font-weight: bold; }
+        .status-pending { background-color: #FEFCBF; color: var(--warning-yellow); }
+        .status-transit { background-color: #E6FFFA; color: var(--accent-teal); }
+        
+        .route-body h3 { margin: 0 0 5px 0; font-size: 16px; color: var(--text-dark); }
+        .route-address { font-size: 13px; color: var(--text-light); display: flex; gap: 8px; margin-bottom: 15px; line-height: 1.4; }
+        
+        .route-actions { display: flex; gap: 10px; }
+        .btn-route { flex: 1; padding: 8px; text-align: center; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--white); color: var(--text-dark); transition: 0.2s; }
+        .btn-route:hover { background: var(--bg-gray); }
+        .btn-start-session { flex: 1; padding: 8px; text-align: center; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: var(--success-green); color: var(--white); transition: 0.2s; text-decoration: none; }
+        .btn-start-session:hover { background: #38A169; }
+
+        /* Mapa y Detalles de Logística (Placeholder) */
+        .map-container { background: var(--white); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--border-color); display: flex; flex-direction: column; height: 100%; min-height: 500px; }
+        .map-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); background: #F7FAFC; border-radius: 8px 8px 0 0; }
+        .map-header h3 { margin: 0; font-size: 16px; color: var(--text-dark); }
+        
+        .map-placeholder { flex-grow: 1; background-color: #E2E8F0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-light); text-align: center; padding: 20px; }
+        .map-placeholder i { font-size: 48px; margin-bottom: 15px; color: #CBD5E0; }
+        
+        .logistics-details { padding: 20px; }
+        .logistics-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 15px; font-size: 14px; }
+        .logistics-item i { color: var(--primary-blue); margin-top: 3px; }
+        .logistics-item div strong { display: block; color: var(--text-dark); margin-bottom: 2px; }
+        .logistics-item div span { color: var(--text-light); }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h1> Rehab IoT </h1>
+        <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Portal Médico</p>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{{url_for('clinica_dashboard')}}"><i class="fa-solid fa-calendar-day"></i> Mi Agenda Hoy</a></li>
+        <li><a href="{{url_for('clinica_obtenerPacientes')}}"><i class="fa-solid fa-users"></i> Mis Pacientes</a></li>
+        <li><a href="#"><i class="fa-solid fa-file-medical"></i> Historial Sesiones</a></li>
+        <li><a href="{{url_for('clinica_obtenerSesiones')}}" ><i class="fa-solid fa-file-medical"></i> Sesión Activa</a></li>
+        <li><a href="{{url_for('clinica_sesionesDomicilio')}}" class="active"><i class="fa-solid fa-house-chimney-user"></i> Terapias Domicilio</a></li>
+        <li style="margin-top: auto;"><a href="{{url_for('principal')}}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+
+    <main class="main-content">
+        
+        <div class="header-actions">
+            <div>
+                <h2>Logística de Terapias a Domicilio</h2>
+                <p>Gestiona tus rutas y tiempos de traslado para atenciones fuera de la clínica.</p>
+            </div>
+            <button class="btn-new" onclick="alert('Abriendo formulario de nueva cita a domicilio...')">
+                <i class="fa-solid fa-plus"></i> Programar Visita
+            </button>
+        </div>
+
+        <div class="kpi-row">
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="fa-solid fa-house-user"></i></div>
+                <div class="kpi-info">
+                    <h4>Visitas Hoy</h4>
+                    <p class="value">{{ total_visitas | default('3') }}</p>
+                </div>
+            </div>
+            <div class="kpi-card" style="border-left-color: var(--warning-yellow);">
+                <div class="kpi-icon" style="color: var(--warning-yellow);"><i class="fa-solid fa-car"></i></div>
+                <div class="kpi-info">
+                    <h4>Est. Traslado Total</h4>
+                    <p class="value">{{ tiempo_traslado | default('1h 45m') }}</p>
+                </div>
+            </div>
+            <div class="kpi-card" style="border-left-color: var(--accent-teal);">
+                <div class="kpi-icon" style="color: var(--accent-teal);"><i class="fa-solid fa-route"></i></div>
+                <div class="kpi-info">
+                    <h4>Distancia Aprox.</h4>
+                    <p class="value">{{ distancia_total | default('28 km') }}</p>
+                </div>
+            </div>
+            <div class="kpi-card" style="border-left-color: var(--success-green);">
+                <div class="kpi-icon" style="color: var(--success-green);"><i class="fa-solid fa-gas-pump"></i></div>
+                <div class="kpi-info">
+                    <h4>Viáticos Autorizados</h4>
+                    <p class="value">{{ viaticos | default('$350.00') }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="logistics-grid">
+            <div class="routes-list">
+                
+                {% for visita in visitas_domicilio %}
+                <div class="route-card {% if visita.estado == 'En Camino' %}active{% endif %}">
+                    <div class="route-header">
+                        <span class="route-time"><i class="fa-regular fa-clock"></i> {{ visita.hora }}</span>
+                        {% if visita.estado == 'En Camino' %}
+                            <span class="route-status status-transit">En Camino</span>
+                        {% else %}
+                            <span class="route-status status-pending">Pendiente</span>
+                        {% endif %}
+                    </div>
+                    <div class="route-body">
+                        <h3>{{ visita.paciente_nombre }}</h3>
+                        <div class="route-address">
+                            <i class="fa-solid fa-location-dot" style="color: var(--danger-red); margin-top: 3px;"></i>
+                            <span>{{ visita.direccion }}</span>
+                        </div>
+                    </div>
+                    <div class="route-actions">
+                        <button class="btn-route"><i class="fa-solid fa-map"></i> Ver Ruta</button>
+                        <a href="/sesion/iniciar/{{ visita.id_paciente }}" class="btn-start-session">
+                            <i class="fa-solid fa-notes-medical"></i> Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                
+                <div class="route-card active">
+                    <div class="route-header">
+                        <span class="route-time"><i class="fa-regular fa-clock"></i> 10:00 AM</span>
+                        <span class="route-status status-transit">En Camino</span>
+                    </div>
+                    <div class="route-body">
+                        <h3>Roberto Gómez (PAC-1120)</h3>
+                        <div class="route-address">
+                            <i class="fa-solid fa-location-dot" style="color: var(--danger-red); margin-top: 3px;"></i>
+                            <span>Av. Lázaro Cárdenas 1204, Col. Del Valle, San Pedro Garza García, N.L.</span>
+                        </div>
+                    </div>
+                    <div class="route-actions">
+                        <button class="btn-route"><i class="fa-solid fa-map"></i> Ver Ruta</button>
+                        <a href="#" class="btn-start-session"><i class="fa-solid fa-notes-medical"></i> Iniciar Sesión</a>
+                    </div>
+                </div>
+
+                <div class="route-card">
+                    <div class="route-header">
+                        <span class="route-time"><i class="fa-regular fa-clock"></i> 01:30 PM</span>
+                        <span class="route-status status-pending">Pendiente</span>
+                    </div>
+                    <div class="route-body">
+                        <h3>Lucía Hernández (PAC-0945)</h3>
+                        <div class="route-address">
+                            <i class="fa-solid fa-location-dot" style="color: var(--danger-red); margin-top: 3px;"></i>
+                            <span>Calle Morelos 450, Centro, Monterrey, N.L.</span>
+                        </div>
+                    </div>
+                    <div class="route-actions">
+                        <button class="btn-route"><i class="fa-solid fa-map"></i> Ver Ruta</button>
+                        <a href="#" class="btn-start-session" style="background: #A0AEC0; cursor: not-allowed;" onclick="event.preventDefault()">Esperando...</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="map-container">
+                <div class="map-header">
+                    <h3>Detalle de Ruta: Roberto Gómez</h3>
+                </div>
+                
+                <div class="map-placeholder">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <h4 style="margin: 0; color: var(--text-dark);">Mapa del Trayecto</h4>
+                    <p style="font-size: 13px; max-width: 250px;">Aquí se integrará el iframe de Google Maps o Mapbox con la ruta trazada.</p>
+                </div>
+                
+                <div class="logistics-details">
+                    <div class="logistics-item">
+                        <i class="fa-solid fa-phone"></i>
+                        <div>
+                            <strong>Contacto del Paciente</strong>
+                            <span>+52 81 1234 5678 (Confirmó asistencia)</span>
+                        </div>
+                    </div>
+                    <div class="logistics-item">
+                        <i class="fa-solid fa-circle-exclamation" style="color: var(--warning-yellow);"></i>
+                        <div>
+                            <strong>Instrucciones de Acceso</strong>
+                            <span>Es una privada con caseta. Presentar identificación y decir que va a la casa 42. Cuidado con el perro en el patio.</span>
+                        </div>
+                    </div>
+                    <div class="logistics-item">
+                        <i class="fa-solid fa-briefcase-medical"></i>
+                        <div>
+                            <strong>Equipo Requerido</strong>
+                            <span>Llevar máquina TENS portátil, ligas de resistencia (Baja/Media) y camilla plegable.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</body>
+</html>

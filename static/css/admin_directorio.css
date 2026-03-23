@@ -1,0 +1,63 @@
+body { 
+  display: flex;
+  overflow: hidden;
+}
+.controls { 
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  background: var(--white);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.search-box { 
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  outline: none;
+}
+.search-box:focus { border-color: var(--primary-blue); }
+
+table { 
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: 8px; overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+thead { 
+  color: var(--text-light);
+}
+th { 
+  padding: 15px;
+  cursor: pointer;
+  text-align: left;
+}
+th:hover { 
+  background-color: var(--hover-blue);
+  color: var(--white);
+}
+td { 
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+
+}
+.sub-text { 
+  display: block;
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+        /* Elementos de texto extra */
+        .obs-text { font-size: 13px; color: var(--text-light); max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.action-btns { display: flex; gap: 10px; }
+
+/* Etiquetas de estado (Badges) */
+.badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; color: var(--white); display: inline-block; }
+.badge-presente { background-color: var(--success); }
+.badge-ausente { background-color: var(--danger-red); }
+.badge-pendiente { background-color: var(--warning); }
+.badge-metodo { background-color: #EDF2F7; color: var(--text-dark); border: 1px solid var(--border-color); font-weight: normal; margin-top: 5px; }

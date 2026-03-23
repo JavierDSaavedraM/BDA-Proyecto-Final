@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoreo de Beacons - Rehab IoT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/admin_base.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/admin_beacons.css')}}">
+
+</head>
+<body>
+
+    <!-- Inicio de SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h1> Rehab IoT <h1>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{{url_for('admin_dashboard')}}"><i class="fa-solid fa-arrows-to-circle"></i> Dashboard</a></li>
+        <li><a href="{{url_for('admin_obtenerPacientes')}}"> <i class="fa-solid fa-clipboard-user"></i>Pacientes</a></li>
+        <li><a href="{{url_for('admin_obtenerTerapeutas')}}"> <i class="fa-solid fa-user-group"></i> Terapeutas</a></li>
+        <li><a href="{{url_for('admin_obtenerSesiones')}}"> <i class="fa-solid fa-house-chimney-user"></i> Sesiones </a></li>
+        <li><a href="{{url_for('admin_obtenerBeacons')}}" class="active"><i class="fa-solid fa-cubes-stacked"></i> Zonas (Beacons)</a></li>
+        <li><a href="{{url_for('admin_reportes')}}"> <i class="fa-solid fa-book"></i> Reportes </a></li>
+        <li><a href="{{url_for('principal')}}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+    <!-- Fin de SIDEBAR -->
+
+    <main class="main-content">
+        <div class="dashboard-header">
+            <div>
+                <h2>Monitoreo de Zonas y Beacons</h2>
+                <p style="color: var(--text-light); font-size: 14px; margin-top: 5px;">Estado operativo y ocupación en tiempo real</p>
+            </div>
+            <div class="pulse-indicator">
+                <span class="led online"></span> Última actualización: <strong id="lastUpdate">Hace 2 seg</strong>
+            </div>
+        </div>
+
+        <div class="zone-grid">
+            
+            {% for zona in zonas %}
+            <div class="zone-card {% if zona.estado_beacon == 'Offline' %}danger{% elif zona.bateria is not none and zona.bateria < 20 %}warning{% endif %}">
+                
+                <div class="zone-header">
+                    <span class="zone-title">
+                        <i class="fa-solid fa-location-dot" style="color: var(--text-light); margin-right: 8px;"></i> 
+                        {{ zona.nombre }}
+                    </span>
+                    <span class="led {% if zona.estado_beacon == 'Online' and zona.bateria is not none and zona.bateria >= 20 %}online{% elif zona.estado_beacon == 'Online' and zona.bateria is not none and zona.bateria < 20 %}warning{% else %}offline{% endif %}" title="Estado: {{ zona.estado_beacon }}"></span>
+                </div>
+
+                <div class="metric">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Personas presentes:</span>
+                    <span class="metric-value">{{ zona.ocupacion_actual }}</span>
+                </div>
+
+                <div class="metric">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span>Pacientes en sesión:</span>
+                    <span class="metric-value" style="color: var(--accent-teal);">{{ zona.sesiones_activas }}</span>
+                </div>
+
+                <div class="beacon-details">
+                    {% if zona.id_beacon %}
+                        <div>
+                            <i class="fa-solid fa-microchip"></i> ID: {{ zona.id_beacon }}
+                        </div>
+                        <div>
+                            {% if zona.bateria > 75 %}
+                                <i class="fa-solid fa-battery-full" style="color: #48BB78;"></i>
+                            {% elif zona.bateria > 25 %}
+                                <i class="fa-solid fa-battery-half" style="color: #D69E2E;"></i>
+                            {% else %}
+                                <i class="fa-solid fa-battery-empty" style="color: #E53E3E;"></i>
+                            {% endif %}
+                            {{ zona.bateria }}%
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-wifi"></i> {{ zona.senal_dbm }} dBm
+                        </div>
+                    {% else %}
+                        <div style="color: #E53E3E; width: 100%; text-align: center;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Sin dispositivo asignado
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% else %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: var(--white); border-radius: 8px;">
+                <h3 style="color: var(--text-light);">No hay zonas registradas en la admin_base de datos</h3>
+                <p>Agrega zonas y beacons desde el panel de administración para comenzar a monitorear.</p>
+            </div>
+            {% endfor %}
+            
+        </div>
+    </main>
+
+    <script>
+        setInterval(() => {
+            let timerElement = document.getElementById('lastUpdate');
+            let currentText = timerElement.innerText;
+            
+            if(currentText.includes("2 seg")) {
+                timerElement.innerText = "Hace 5 seg";
+            } else if(currentText.includes("5 seg")) {
+                timerElement.innerText = "Hace 8 seg";
+            } else {
+                timerElement.innerText = "Hace 1 seg";
+                timerElement.style.color = "var(--success)";
+                setTimeout(() => { timerElement.style.color = "inherit"; }, 500);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
