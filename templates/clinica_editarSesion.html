@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Familiar - Rehab IoT</title>
+  <style>
+    /* --- Estilos Generales --- */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7f6;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* --- Contenedor del Formulario --- */
+    .form-container {
+      background-color: #ffffff;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-top: 0;
+      margin-bottom: 25px;
+    }
+
+    /* --- Grupos de Campos --- */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .row .form-group {
+      flex: 1;
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 0.9em;
+      color: #555;
+    }
+
+    /* --- Entradas de Texto, Selectores y Textarea --- */
+    input[type="date"],
+    input[type="time"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccd0d5;
+      border-radius: 6px;
+      font-size: 1em;
+      font-family: inherit;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* --- Estilos para la Escala del 1 al 10 --- */
+    .rating-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    /* Ocultar el círculo clásico del radio button */
+    .rating-group input[type="radio"] {
+      display: none;
+    }
+
+    /* Diseñar las etiquetas (números) como botones */
+    .rating-label {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      background-color: #f8f9fa;
+      border: 1px solid #ccd0d5;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 0;
+      font-weight: normal;
+      font-size: 0.9em;
+      transition: all 0.2s ease;
+    }
+
+    .rating-label:hover {
+      background-color: #e9ecef;
+    }
+
+    /* Estilo cuando un número es seleccionado */
+    .rating-group input[type="radio"]:checked+.rating-label {
+      background-color: #3498db;
+      color: white;
+      border-color: #3498db;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(52, 152, 219, 0.4);
+    }
+
+    /* --- Botón de Guardar --- */
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="form-container">
+    <h2>Registro de Sesión</h2>
+    <form action="#" method="POST">
+
+      <div class="form-group">
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" name="fecha" required>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="hora_inicio">Hora de inicio</label>
+          <input type="time" id="hora_inicio" name="hora_inicio" required>
+        </div>
+        <div class="form-group">
+          <label for="hora_fin">Hora de fin</label>
+          <input type="time" id="hora_fin" name="hora_fin" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="tipo_sesion">Tipo de sesión</label>
+        <select id="tipo_sesion" name="tipo_sesion" required>
+          <option value="" disabled selected>Selecciona una opción...</option>
+          <option value="evaluacion">Evaluación</option>
+          <option value="individual">Terapia Individual</option>
+          <option value="pareja">Terapia de Pareja</option>
+          <option value="familiar">Terapia Familiar</option>
+          <option value="grupal">Terapia Grupal</option>
+          <option value="seguimiento">Seguimiento</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="asistencia">Asistencia</label>
+        <select id="asistencia" name="asistencia" required>
+          <option value="" disabled selected>Selecciona una opción...</option>
+          <option value="asistio">Asistió</option>
+          <option value="falta_sin_aviso">Falta sin aviso</option>
+          <option value="cancelo_paciente">Canceló (Paciente)</option>
+          <option value="cancelo_terapeuta">Canceló (Terapeuta)</option>
+          <option value="reprogramada">Reprogramada</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="metodo_registro">Método de registro</label>
+        <select id="metodo_registro" name="metodo_registro" required>
+          <option value="" disabled selected>Selecciona una opción...</option>
+          <option value="presencial">Presencial</option>
+          <option value="online">Videollamada (Online)</option>
+          <option value="telefonica">Llamada telefónica</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Evaluación de la sesión (1 al 10)</label>
+        <div class="rating-group">
+          <input type="radio" id="score-1" name="evaluacion" value="1" required><label class="rating-label"
+            for="score-1">1</label>
+          <input type="radio" id="score-2" name="evaluacion" value="2"><label class="rating-label"
+            for="score-2">2</label>
+          <input type="radio" id="score-3" name="evaluacion" value="3"><label class="rating-label"
+            for="score-3">3</label>
+          <input type="radio" id="score-4" name="evaluacion" value="4"><label class="rating-label"
+            for="score-4">4</label>
+          <input type="radio" id="score-5" name="evaluacion" value="5"><label class="rating-label"
+            for="score-5">5</label>
+          <input type="radio" id="score-6" name="evaluacion" value="6"><label class="rating-label"
+            for="score-6">6</label>
+          <input type="radio" id="score-7" name="evaluacion" value="7"><label class="rating-label"
+            for="score-7">7</label>
+          <input type="radio" id="score-8" name="evaluacion" value="8"><label class="rating-label"
+            for="score-8">8</label>
+          <input type="radio" id="score-9" name="evaluacion" value="9"><label class="rating-label"
+            for="score-9">9</label>
+          <input type="radio" id="score-10" name="evaluacion" value="10"><label class="rating-label"
+            for="score-10">10</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="observaciones_clinicas">Observaciones clínicas</label>
+        <textarea id="observaciones_clinicas" name="observaciones_clinicas"
+          placeholder="Escribe las notas de la sesión aquí..." required></textarea>
+      </div>
+
+      <button type="submit">Guardar Sesión</button>
+
+    </form>
+  </div>
+
+</body>
+
+</html>

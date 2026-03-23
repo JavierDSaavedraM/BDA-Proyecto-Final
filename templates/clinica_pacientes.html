@@ -1,150 +1,166 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Pacientes - Rehab IoT</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{{url_for('static',filename='css/clinica_base.css')}}">
-    <link rel="stylesheet" href="{{url_for('static',filename='css/clinica_pacientes.css')}}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Pacientes - Rehab IoT</title>
 
-  </head>
-  <body>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+  <link rel="stylesheet" href="{{url_for('static',filename='css/clinica_base.css')}}">
+  <link rel="stylesheet" href="{{url_for('static',filename='css/clinica_pacientes.css')}}">
 
-    <nav class="sidebar">
-      <div class="sidebar-header">
-        <h1> Rehab IoT </h1>
-        <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Portal Médico</p>
+</head>
+
+<body>
+
+  <!-- Inicio de sidebar-->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h1> Rehab IoT </h1>
+      <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Portal Médico</p>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{url_for('clinica_dashboard')}}"><i class="fa-solid fa-calendar-day"></i> Mi Agenda
+          Hoy</a></li>
+      <li><a href="{{url_for('clinica_obtenerPacientes')}}" class="active"><i class="fa-solid fa-users"></i> Mis
+          Pacientes</a></li>
+      <li><a href="{{url_for('clinica_obtenerSesiones')}}"><i class="fa-solid fa-file-medical"></i> Historial
+          Sesiones</a></li>
+      <li><a href="{{url_for('clinica_expedienteSesion')}}"><i class="fa-solid fa-file-medical"></i> Sesión Activa</a>
+      </li>
+      <li><a href="{{url_for('clinica_sesionesDomicilio')}}"><i class="fa-solid fa-house-chimney-user"></i> Terapias
+          Domicilio</a></li>
+      <li style="margin-top: auto;"><a href="{{url_for('principal')}}"><i
+            class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión</a></li>
+    </ul>
+  </nav>
+  <!-- Fin de sidebar-->
+
+  <main class="main-content">
+
+    <div class="controls">
+      <div>
+        <h2>Directorio de Mis Pacientes</h2>
+        <p style="font-size: 14px; color: var(--text-light); margin: 5px 0 0 0;">Visualiza y busca rápidamente el
+          historial de tus pacientes asignados.</p>
       </div>
-      <ul class="nav-links">
-        <li><a href="{{url_for('clinica_dashboard')}}" ><i class="fa-solid fa-calendar-day"></i> Mi Agenda Hoy</a></li>
-        <li><a href="{{url_for('clinica_obtenerPacientes')}}" class="active"><i class="fa-solid fa-users"></i> Mis Pacientes</a></li>
-        <li><a href="{{url_for('clinica_obtenerSesiones')}}"><i class="fa-solid fa-file-medical"></i> Historial Sesiones</a></li>
-        <li><a href="{{url_for('clinica_expedienteSesion')}}" class="active"><i class="fa-solid fa-file-medical"></i> Sesión Activa</a></li>
-        <li><a href="#"><i class="fa-solid fa-house-chimney-user"></i> Terapias Domicilio</a></li>
-        <li style="margin-top: auto;"><a href="{{url_for('principal')}}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión</a></li>
-      </ul>
-    </nav>
+      <input type="text" id="searchInput" class="search-box" placeholder="Buscar por nombre, ID o diagnóstico..."
+        onkeyup="filtrarPacientes()">
+    </div>
 
-    <main class="main-content">
+    <div class="table-container">
+      <table id="pacientesTable">
+        <thead>
+          <tr>
+            <th onclick="ordenarTabla(0)">ID Paciente ⇕</th>
+            <th onclick="ordenarTabla(1)">Nombre del Paciente ⇕</th>
+            <th onclick="ordenarTabla(2)">Diagnóstico / Motivo ⇕</th>
+            <th onclick="ordenarTabla(3)">Última Sesión ⇕</th>
+            <th onclick="ordenarTabla(4)">Estado ⇕</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for paciente in mis_pacientes %}
+          <tr>
+            <td><strong>{{ paciente.id_paciente }}</strong></td>
+            <td>
+              <strong>{{ paciente.nombre }}</strong>
+              <span class="sub-text"><i class="fa-solid fa-cake-candles"></i> {{ paciente.edad }} años</span>
+            </td>
+            <td>
+              {{ paciente.diagnostico }}
+              <span class="sub-text">{{ paciente.tipo_terapia }}</span>
+            </td>
+            <td>
+              {% if paciente.ultima_sesion %}
+              <i class="fa-regular fa-calendar"></i> {{ paciente.ultima_sesion }}
+              {% else %}
+              <span style="color: var(--status-grey);">Sin registro previo</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if paciente.estado == 'Activo' %}
+              <span class="badge badge-activo">En Tratamiento</span>
+              {% elif paciente.estado == 'Pausado' %}
+              <span class="badge badge-pausa">Pausado</span>
+              {% else %}
+              <span class="badge badge-alta">Alta Médica</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="/expediente/{{ paciente.id_paciente }}" class="btn-action btn-view">
+                <i class="fa-solid fa-folder-open"></i> Ver Expediente
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td><strong>PAC-1042</strong></td>
+            <td><strong>Ana López García</strong><span class="sub-text"><i class="fa-solid fa-cake-candles"></i> 45
+                años</span></td>
+            <td>Tendinitis Bicipital<span class="sub-text">Terapia Física</span></td>
+            <td><i class="fa-regular fa-calendar"></i> 18 Mar 2026</td>
+            <td><span class="badge badge-activo">En Tratamiento</span></td>
+            <td><button class="btn-action btn-view"><i class="fa-solid fa-folder-open"></i> Ver Expediente</button></td>
+          </tr>
+          <tr>
+            <td><strong>PAC-1088</strong></td>
+            <td><strong>Carlos Ruiz</strong><span class="sub-text"><i class="fa-solid fa-cake-candles"></i> 62
+                años</span></td>
+            <td>Post-operatorio Rodilla<span class="sub-text">Rehabilitación Ocupacional</span></td>
+            <td><i class="fa-regular fa-calendar"></i> 20 Mar 2026</td>
+            <td><span class="badge badge-activo">En Tratamiento</span></td>
+            <td><button class="btn-action btn-view"><i class="fa-solid fa-folder-open"></i> Ver Expediente</button></td>
+          </tr>
+          <tr>
+            <td><strong>PAC-0950</strong></td>
+            <td><strong>Laura Mendoza</strong><span class="sub-text"><i class="fa-solid fa-cake-candles"></i> 28
+                años</span></td>
+            <td>Esguince Cervical<span class="sub-text">Terapia Física</span></td>
+            <td><i class="fa-regular fa-calendar"></i> 10 Feb 2026</td>
+            <td><span class="badge badge-alta">Alta Médica</span></td>
+            <td><button class="btn-action btn-view"><i class="fa-solid fa-folder-open"></i> Ver Expediente</button></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
-      <div class="controls">
-        <div>
-          <h2>Directorio de Mis Pacientes</h2>
-          <p style="font-size: 14px; color: var(--text-light); margin: 5px 0 0 0;">Visualiza y busca rápidamente el historial de tus pacientes asignados.</p>
-        </div>
-        <input type="text" id="searchInput" class="search-box" placeholder="Buscar por nombre, ID o diagnóstico..." onkeyup="filtrarPacientes()">
-      </div>
+  </main>
 
-      <div class="table-container">
-        <table id="pacientesTable">
-          <thead>
-            <tr>
-              <th onclick="ordenarTabla(0)">ID Paciente ⇕</th>
-              <th onclick="ordenarTabla(1)">Nombre del Paciente ⇕</th>
-              <th onclick="ordenarTabla(2)">Diagnóstico / Motivo ⇕</th>
-              <th onclick="ordenarTabla(3)">Última Sesión ⇕</th>
-              <th onclick="ordenarTabla(4)">Estado ⇕</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for paciente in mis_pacientes %}
-            <tr>
-              <td><strong>{{ paciente.id_paciente }}</strong></td>
-              <td>
-                <strong>{{ paciente.nombre }}</strong>
-                <span class="sub-text"><i class="fa-solid fa-cake-candles"></i> {{ paciente.edad }} años</span>
-              </td>
-              <td>
-                {{ paciente.diagnostico }}
-                <span class="sub-text">{{ paciente.tipo_terapia }}</span>
-              </td>
-              <td>
-                {% if paciente.ultima_sesion %}
-                <i class="fa-regular fa-calendar"></i> {{ paciente.ultima_sesion }}
-                {% else %}
-                <span style="color: var(--status-grey);">Sin registro previo</span>
-                {% endif %}
-              </td>
-              <td>
-                {% if paciente.estado == 'Activo' %}
-                <span class="badge badge-activo">En Tratamiento</span>
-                {% elif paciente.estado == 'Pausado' %}
-                <span class="badge badge-pausa">Pausado</span>
-                {% else %}
-                <span class="badge badge-alta">Alta Médica</span>
-                {% endif %}
-              </td>
-              <td>
-                <a href="/expediente/{{ paciente.id_paciente }}" class="btn-action btn-view">
-                  <i class="fa-solid fa-folder-open"></i> Ver Expediente
-                </a>
-              </td>
-            </tr>
-            {% else %}
-            <tr>
-              <td><strong>PAC-1042</strong></td>
-              <td><strong>Ana López García</strong><span class="sub-text"><i class="fa-solid fa-cake-candles"></i> 45 años</span></td>
-              <td>Tendinitis Bicipital<span class="sub-text">Terapia Física</span></td>
-              <td><i class="fa-regular fa-calendar"></i> 18 Mar 2026</td>
-              <td><span class="badge badge-activo">En Tratamiento</span></td>
-              <td><button class="btn-action btn-view"><i class="fa-solid fa-folder-open"></i> Ver Expediente</button></td>
-            </tr>
-            <tr>
-              <td><strong>PAC-1088</strong></td>
-              <td><strong>Carlos Ruiz</strong><span class="sub-text"><i class="fa-solid fa-cake-candles"></i> 62 años</span></td>
-              <td>Post-operatorio Rodilla<span class="sub-text">Rehabilitación Ocupacional</span></td>
-              <td><i class="fa-regular fa-calendar"></i> 20 Mar 2026</td>
-              <td><span class="badge badge-activo">En Tratamiento</span></td>
-              <td><button class="btn-action btn-view"><i class="fa-solid fa-folder-open"></i> Ver Expediente</button></td>
-            </tr>
-            <tr>
-              <td><strong>PAC-0950</strong></td>
-              <td><strong>Laura Mendoza</strong><span class="sub-text"><i class="fa-solid fa-cake-candles"></i> 28 años</span></td>
-              <td>Esguince Cervical<span class="sub-text">Terapia Física</span></td>
-              <td><i class="fa-regular fa-calendar"></i> 10 Feb 2026</td>
-              <td><span class="badge badge-alta">Alta Médica</span></td>
-              <td><button class="btn-action btn-view"><i class="fa-solid fa-folder-open"></i> Ver Expediente</button></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+  <script>
+    // 1. Buscador en tiempo real
+    function filtrarPacientes() {
+      let input = document.getElementById("searchInput").value.toLowerCase();
+      let filas = document.querySelectorAll("#pacientesTable tbody tr");
 
-    </main>
+      filas.forEach(fila => {
+        let textoFila = fila.textContent.toLowerCase();
+        fila.style.display = textoFila.includes(input) ? "" : "none";
+      });
+    }
 
-    <script>
-      // 1. Buscador en tiempo real
-      function filtrarPacientes() {
-        let input = document.getElementById("searchInput").value.toLowerCase();
-        let filas = document.querySelectorAll("#pacientesTable tbody tr");
+    // 2. Ordenamiento al hacer clic en las cabeceras
+    function ordenarTabla(n) {
+      let tabla = document.getElementById("pacientesTable");
+      let tbody = tabla.querySelector("tbody");
+      let filas = Array.from(tbody.querySelectorAll("tr"));
+      let ascendente = tabla.dataset.orden === "asc";
 
-        filas.forEach(fila => {
-          let textoFila = fila.textContent.toLowerCase();
-          fila.style.display = textoFila.includes(input) ? "" : "none";
-        });
-      }
+      filas.sort((a, b) => {
+        let celdaA = a.cells[n].innerText.toLowerCase();
+        let celdaB = b.cells[n].innerText.toLowerCase();
+        if (celdaA < celdaB) return ascendente ? -1 : 1;
+        if (celdaA > celdaB) return ascendente ? 1 : -1;
+        return 0;
+      });
 
-      // 2. Ordenamiento al hacer clic en las cabeceras
-      function ordenarTabla(n) {
-        let tabla = document.getElementById("pacientesTable");
-        let tbody = tabla.querySelector("tbody");
-        let filas = Array.from(tbody.querySelectorAll("tr"));
-        let ascendente = tabla.dataset.orden === "asc";
+      tabla.dataset.orden = ascendente ? "desc" : "asc";
+      filas.forEach(fila => tbody.appendChild(fila));
+    }
+  </script>
+</body>
 
-        filas.sort((a, b) => {
-          let celdaA = a.cells[n].innerText.toLowerCase();
-          let celdaB = b.cells[n].innerText.toLowerCase();
-          if (celdaA < celdaB) return ascendente ? -1 : 1;
-          if (celdaA > celdaB) return ascendente ? 1 : -1;
-          return 0;
-        });
-
-        tabla.dataset.orden = ascendente ? "desc" : "asc";
-        filas.forEach(fila => tbody.appendChild(fila));
-      }
-    </script>
-  </body>
 </html>

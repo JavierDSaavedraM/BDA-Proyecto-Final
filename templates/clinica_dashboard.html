@@ -1,148 +1,166 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Panel - Rehab IoT</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{{url_for('static',filename='css/clinica_base.css')}}">
-    <link rel="stylesheet" href="{{url_for('static',filename='css/clinica_dashboard.css')}}">
-  </head>
-  <body>
 
-    <nav class="sidebar">
-      <div class="sidebar-header">
-        <h1> Rehab IoT </h1>
-        <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Portal Médico</p>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Panel - Rehab IoT</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+  <link rel="stylesheet" href="{{url_for('static',filename='css/clinica_base.css')}}">
+  <link rel="stylesheet" href="{{url_for('static',filename='css/clinica_dashboard.css')}}">
+</head>
+
+<body>
+
+  <!-- Inicio de sidebar-->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h1> Rehab IoT </h1>
+      <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Portal Médico</p>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{url_for('clinica_dashboard')}}" class="active"><i class="fa-solid fa-calendar-day"></i> Mi Agenda
+          Hoy</a></li>
+      <li><a href="{{url_for('clinica_obtenerPacientes')}}"><i class="fa-solid fa-users"></i> Mis Pacientes</a></li>
+      <li><a href="{{url_for('clinica_obtenerSesiones')}}"><i class="fa-solid fa-file-medical"></i> Historial
+          Sesiones</a></li>
+      <li><a href="{{url_for('clinica_expedienteSesion')}}"><i class="fa-solid fa-file-medical"></i> Sesión Activa</a>
+      </li>
+      <li><a href="{{url_for('clinica_sesionesDomicilio')}}"><i class="fa-solid fa-house-chimney-user"></i> Terapias
+          Domicilio</a></li>
+      <li style="margin-top: auto;"><a href="{{url_for('principal')}}"><i
+            class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión</a></li>
+    </ul>
+  </nav>
+  <!-- Fin de sidebar-->
+
+  <main class="main-content">
+
+    <div class="header">
+      <div>
+        <h2>Hola, Dr. {{ terapeuta_nombre | default('Martínez') }}</h2>
+        <p>Aquí está tu flujo de pacientes para hoy.</p>
       </div>
-      <ul class="nav-links">
-        <li><a href="{{url_for('clinica_dashboard')}}" class="active"><i class="fa-solid fa-calendar-day"></i> Mi Agenda Hoy</a></li>
-        <li><a href="{{url_for('clinica_obtenerPacientes')}}"><i class="fa-solid fa-users"></i> Mis Pacientes</a></li>
-        <li><a href="#"><i class="fa-solid fa-file-medical"></i> Historial Sesiones</a></li>
-        <li><a href="{{url_for('clinica_obtenerSesiones')}}" ><i class="fa-solid fa-file-medical"></i> Sesión Activa</a></li>
-        <li><a href="{{url_for('clinica_sesionesDomicilio')}}"><i class="fa-solid fa-house-chimney-user"></i> Terapias Domicilio</a></li>
-        <li style="margin-top: auto;"><a href="{{url_for('principal')}}"><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión</a></li>
-      </ul>
-    </nav>
-
-    <main class="main-content">
-
-      <div class="header">
-        <div>
-          <h2>Hola, Dr. {{ terapeuta_nombre | default('Martínez') }}</h2>
-          <p>Aquí está tu flujo de pacientes para hoy.</p>
-        </div>
-        <div class="date-badge">
-          <i class="fa-regular fa-calendar"></i> <span id="currentDate">22 de Marzo, 2026</span>
-        </div>
+      <div class="date-badge">
+        <i class="fa-regular fa-calendar"></i> <span id="currentDate">22 de Marzo, 2026</span>
       </div>
+    </div>
 
-      <div class="summary-grid">
-        <div class="summary-card">
-          <h3>{{ total_citas | default('8') }}</h3>
-          <p>Citas Programadas</p>
-        </div>
-        <div class="summary-card pending">
-          <h3 style="color: var(--status-yellow);">{{ pacientes_espera | default('2') }}</h3>
-          <p>En Sala de Espera</p>
-        </div>
-        <div class="summary-card done">
-          <h3 style="color: var(--status-green);">{{ atendidos_hoy | default('3') }}</h3>
-          <p>Pacientes Atendidos</p>
-        </div>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <h3>{{ total_citas | default('0') }}</h3>
+        <p>Citas Programadas</p>
       </div>
-
-      <div class="agenda-container">
-        <div class="agenda-header">
-          <h3>Agenda y Localización IoT</h3>
-          <span style="font-size: 12px; color: var(--text-light);"><i class="fa-solid fa-satellite-dish"></i> Actualización en tiempo real vía Beacons</span>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Horario</th>
-              <th>Paciente</th>
-              <th>Motivo / Terapia</th>
-              <th>Estado (Semáforo)</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for cita in citas_hoy %}
-            <tr>
-              <td style="font-weight: 600; color: var(--primary-blue);">{{ cita.hora }}</td>
-              <td>
-                <strong>{{ cita.paciente_nombre }}</strong>
-                <div style="font-size: 12px; color: var(--text-light);">ID: {{ cita.id_paciente }}</div>
-              </td>
-              <td>{{ cita.tratamiento }}</td>
-
-              <td>
-                {% if cita.estado_ubicacion == 'Consultorio' %}
-                <div class="semaforo text-green">
-                  <span class="dot green"></span> Listo en Consultorio
-                </div>
-                {% elif cita.estado_ubicacion == 'Sala_Espera' %}
-                <div class="semaforo text-yellow">
-                  <span class="dot yellow"></span> En Sala de Espera
-                </div>
-                {% else %}
-                <div class="semaforo text-grey">
-                  <span class="dot grey"></span> No ha llegado
-                </div>
-                {% endif %}
-              </td>
-
-              <td>
-                {% if cita.estado_ubicacion == 'No_Llegado' %}
-                <button class="btn-action btn-disabled" disabled>Esperando...</button>
-                {% else %}
-                <!-- /sesion/iniciar/{{ cita.id_paciente }}-->
-                <a href="{{url_for('clinica_expedienteSesion')}}" class="btn-action btn-start">Iniciar Sesión</a>
-                {% endif %}
-              </td>
-            </tr>
-            {% else %}
-            <tr>
-              <td style="font-weight: 600; color: var(--primary-blue);">09:00 AM</td>
-              <td><strong>Ana López García</strong><div style="font-size: 12px; color: var(--text-light);">ID: PAC-1042</div></td>
-              <td>Rehabilitación de Hombro</td>
-              <td>
-                <div class="semaforo text-green"><span class="dot green"></span> Listo en Consultorio</div>
-              </td>
-              <td>
-                <a href="{{url_for('clinica_expedienteSesion')}}"><button class="btn-action btn-start">Iniciar Sesión</button></a>
-                </td>
-            </tr>
-            <tr>
-              <td style="font-weight: 600; color: var(--primary-blue);">10:00 AM</td>
-              <td><strong>Carlos Ruiz</strong><div style="font-size: 12px; color: var(--text-light);">ID: PAC-1088</div></td>
-              <td>Terapia Física Post-Operatoria</td>
-              <td>
-                <div class="semaforo text-yellow"><span class="dot yellow"></span> En Sala de Espera</div>
-              </td>
-              <td><button class="btn-action btn-start">Ver Expediente</button></td>
-            </tr>
-            <tr>
-              <td style="font-weight: 600; color: var(--primary-blue);">11:30 AM</td>
-              <td><strong>María Fernanda Gómez</strong><div style="font-size: 12px; color: var(--text-light);">ID: PAC-1102</div></td>
-              <td>Electroterapia</td>
-              <td>
-                <div class="semaforo text-grey"><span class="dot grey"></span> No ha llegado</div>
-              </td>
-              <td><button class="btn-action btn-disabled" disabled>Esperando...</button></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+      <div class="summary-card pending">
+        <h3 style="color: var(--status-yellow);">{{ pacientes_espera | default('0') }}</h3>
+        <p>En Sala de Espera</p>
       </div>
-    </main>
+      <div class="summary-card done">
+        <h3 style="color: var(--status-green);">{{ atendidos_hoy | default('0') }}</h3>
+        <p>Pacientes Atendidos</p>
+      </div>
+    </div>
 
-    <script>
-      // Script simple para poner la fecha actual en español
-      const dateElement = document.getElementById('currentDate');
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      dateElement.innerText = new Date().toLocaleDateString('es-ES', options).replace(/^\w/, (c) => c.toUpperCase());
-    </script>
-  </body>
+    <div class="agenda-container">
+      <div class="agenda-header">
+        <h3>Agenda y Localización IoT</h3>
+        <span style="font-size: 12px; color: var(--text-light);"><i class="fa-solid fa-satellite-dish"></i>
+          Actualización en tiempo real vía Beacons</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Horario</th>
+            <th>Paciente</th>
+            <th>Motivo / Terapia</th>
+            <th>Estado (Semáforo)</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cita in citas_hoy %}
+          <tr>
+            <td style="font-weight: 600; color: var(--primary-blue);">{{ cita.hora }}</td>
+            <td>
+              <strong>{{ cita.paciente_nombre }}</strong>
+              <div style="font-size: 12px; color: var(--text-light);">ID: {{ cita.id_paciente }}</div>
+            </td>
+            <td>{{ cita.tratamiento }}</td>
+
+            <td>
+              {% if cita.estado_ubicacion == 'Consultorio' %}
+              <div class="semaforo text-green">
+                <span class="dot green"></span> Listo en Consultorio
+              </div>
+              {% elif cita.estado_ubicacion == 'Sala_Espera' %}
+              <div class="semaforo text-yellow">
+                <span class="dot yellow"></span> En Sala de Espera
+              </div>
+              {% else %}
+              <div class="semaforo text-grey">
+                <span class="dot grey"></span> No ha llegado
+              </div>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if cita.estado_ubicacion == 'No_Llegado' %}
+              <button class="btn-action btn-disabled" disabled>Esperando...</button>
+              {% else %}
+              <!-- /sesion/iniciar/{{ cita.id_paciente }}-->
+              <a href="{{url_for('clinica_expedienteSesion')}}" class="btn-action btn-start">Iniciar Sesión</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td style="font-weight: 600; color: var(--primary-blue);">09:00 AM</td>
+            <td><strong>Ana López García</strong>
+              <div style="font-size: 12px; color: var(--text-light);">ID: PAC-1042</div>
+            </td>
+            <td>Rehabilitación de Hombro</td>
+            <td>
+              <div class="semaforo text-green"><span class="dot green"></span> Listo en Consultorio</div>
+            </td>
+            <td>
+              <a href="{{url_for('clinica_expedienteSesion')}}"><button class="btn-action btn-start">Iniciar
+                  Sesión</button></a>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600; color: var(--primary-blue);">10:00 AM</td>
+            <td><strong>Carlos Ruiz</strong>
+              <div style="font-size: 12px; color: var(--text-light);">ID: PAC-1088</div>
+            </td>
+            <td>Terapia Física Post-Operatoria</td>
+            <td>
+              <div class="semaforo text-yellow"><span class="dot yellow"></span> En Sala de Espera</div>
+            </td>
+            <td><button class="btn-action btn-start">Ver Expediente</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight: 600; color: var(--primary-blue);">11:30 AM</td>
+            <td><strong>María Fernanda Gómez</strong>
+              <div style="font-size: 12px; color: var(--text-light);">ID: PAC-1102</div>
+            </td>
+            <td>Electroterapia</td>
+            <td>
+              <div class="semaforo text-grey"><span class="dot grey"></span> No ha llegado</div>
+            </td>
+            <td><button class="btn-action btn-disabled" disabled>Esperando...</button></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // Script simple para poner la fecha actual en español
+    const dateElement = document.getElementById('currentDate');
+    const options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+    dateElement.innerText = new Date().toLocaleDateString('es-ES', options).replace(/^\w/, (c) => c.toUpperCase());
+  </script>
+</body>
+
 </html>

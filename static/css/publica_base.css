@@ -1,0 +1,107 @@
+:root {
+  --primary: #6B46C1;
+  --hover: #4C51BF;
+  --accent: #B794F4;
+  --bg-gray: #F7FAFC;
+  --text-dark: #2D3748;
+  --text-light: #A0AEC0;
+  --white: #FFFFFF;
+  --border-color: #E2E8F0;
+  --success-green: #48BB78;
+  --warning-yellow: #D69E2E;
+}
+
+body {
+  background-color: var(--bg-gray);
+  color: var(--text-dark);
+  padding: 0;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar (Familiar) */
+.sidebar {
+  min-width: 250px;
+  background-color: var(--white);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h1 {
+  color: var(--primary);
+  font-size: 22px;
+  margin: 0;
+}
+
+.nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-links li a {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  color: var(--text-dark);
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.nav-links li a i {
+  width: 25px;
+  font-size: 18px;
+}
+
+.nav-links li a:hover,
+.nav-links li a.active {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+/* Contenido Principal */
+.main-content {
+  flex-grow: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #F7FAFC;
+  color: var(--text-dark);
+  border-bottom: 2px solid var(--border-color);
+}
+
+th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+td {
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: top;
+  font-size: 14px;
+}
+
+tr:hover {
+  background-color: #F7FAFC;
+}

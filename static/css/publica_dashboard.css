@@ -1,0 +1,135 @@
+/* --- Estilos Generales --- */
+.dashboard-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* --- Encabezado --- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e1e8ed;
+}
+
+.header h1 {
+  color: #2c3e50;
+  margin: 0;
+  font-size: 1.8em;
+}
+
+.header p {
+  color: #7f8c8d;
+  margin: 5px 0 0 0;
+}
+
+/* --- Cuadrícula de Tarjetas (Grid) --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* --- Tarjetas (Cards) --- */
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+.card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* --- Tarjeta Destacada (Próxima Sesión) --- */
+.card.highlight {
+  border-top: 5px solid var(--primary);
+  background-color: #f8fbfe;
+}
+
+.date-big {
+  font-size: 2em;
+  font-weight: bold;
+  color: #3498db;
+  margin: 10px 0;
+}
+
+.time-info {
+  font-size: 1.1em;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.btn {
+  display: inline-block;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+  transition: background-color 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn:hover {
+  background-color: #2980b9;
+}
+
+/* --- Lista de Ejercicios --- */
+.exercise-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.exercise-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.exercise-list li:last-child {
+  border-bottom: none;
+}
+
+.status-icon {
+  font-size: 1.2em;
+}
+
+.exercise-details strong {
+  display: block;
+  color: #333;
+}
+
+.exercise-details span {
+  font-size: 0.9em;
+  color: #7f8c8d;
+}
+
+/* --- Última Sesión --- */
+.last-session-info {
+  color: #555;
+  line-height: 1.6;
+}

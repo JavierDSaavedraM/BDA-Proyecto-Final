@@ -14,7 +14,6 @@ def login():
         # 1. Recibimos los parámetros exactos del formulario HTML
         usuario_id = request.form.get('id')
         usuario_pass = request.form.get('password')
-
         # 2. Aquí va la consulta a tu base de datos MariaDB
         # cursor.execute("SELECT * FROM Usuarios WHERE ID_Usuario = %s AND Password = %s", (usuario_id, usuario_pass))
         # usuario = cursor.fetchone()
@@ -67,6 +66,31 @@ def admin_obtenerTerapeutas():
     # Codigo de la bd donde obtengo la informacion de los pacientes
     return render_template('admin_terapeutas.html')
 
+@app.route('/adminTerapeutas/registrar')
+def admin_registrarTerapeutas():
+    # Codigo de la bd donde se aniade la informacion de los terapeutas
+    return render_template('admin_registrarTerapeuta.html')
+
+@app.route('/adminSesiones/registrar')
+def admin_registrarSesion():
+    # Codigo de la bd donde se aniade la informacion de los terapeutas
+    return render_template('admin_registrarSesion.html')
+
+@app.route('/adminPacientes/registrar')
+def admin_registrarPacientes():
+    # Codigo de la bd donde se aniade la informacion de los terapeutas
+    return render_template('admin_registrarPaciente.html')
+
+@app.route('/adminTerapeuta/eliminar/<int:id_paciente>', methods=['POST'])
+def admin_eliminar_terapeuta(id_paciente):
+    # Lógica para eliminar el registro
+    return redirect(url_for('obtenerPacientes'))
+
+@app.route('/adminSesion/eliminar/<int:id_paciente>', methods=['POST'])
+def admin_eliminar_sesion(id_paciente):
+    # Lógica para eliminar el registro
+    return redirect(url_for('obtenerPacientes'))
+
 @app.route('/adminPaciente/eliminar/<int:id_paciente>', methods=['POST'])
 def admin_eliminar_paciente(id_paciente):
     # Lógica para eliminar el registro
@@ -98,6 +122,10 @@ def publica_dashboard():
     paciente = None
     return render_template('publica_dashboard.html', paciente=paciente)
 
+@app.route('/paciente/sesiones')
+def publica_sesiones():
+    paciente = None
+    return render_template('publica_sesiones.html', paciente=paciente)
 
 if __name__ == "__main__":
     app.run(debug=True)

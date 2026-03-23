@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Familiar - Rehab IoT</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+  <link rel="stylesheet" href="{{url_for('static',filename='css/publica_base.css')}}">
+  <link rel="stylesheet" href="{{url_for('static',filename='css/publica_sesiones.css')}}">
+
+</head>
+
+<body>
+
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h1> Rehab IoT </h1>
+      <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Portal Familiar</p>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{url_for('publica_dashboard')}}"><i class="fa-solid fa-chart-pie"></i> Resumen
+          General</a></li>
+      <li><a href="{{url_for('publica_sesiones')}}" class="active"><i class="fa-solid fa-clock-rotate-left"></i>
+          Historial de
+          Sesiones</a></li>
+      <li style="margin-top: auto;"><a href="{{url_for('principal')}}"><i
+            class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión</a></li>
+    </ul>
+  </nav>
+
+
+  <main class="main-content">
+
+    <div class="patient-banner">
+      <div>
+        <h2>Seguimiento: {{ paciente.nombre | default('Ana López García') }}</h2>
+        <p>Diagnóstico: {{ paciente.diagnostico | default('Tendinitis Bicipital') }} | Inicio de tratamiento: 10 Ene
+          2026</p>
+      </div>
+      <div class="security-badge">
+        <i class="fa-solid fa-shield-halved"></i> Acceso Seguro (Solo Lectura)
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="dateStart">Desde:</label>
+        <input type="date" id="dateStart" class="form-control" onchange="aplicarFiltros()">
+      </div>
+      <div class="filter-group">
+        <label for="dateEnd">Hasta:</label>
+        <input type="date" id="dateEnd" class="form-control" onchange="aplicarFiltros()">
+      </div>
+
+      <div class="filter-group">
+        <label for="filterType">Tipo de Sesión:</label>
+        <select id="filterType" class="form-control" onchange="aplicarFiltros()">
+          <option value="todos">Todas</option>
+          <option value="clinica">En Clínica</option>
+          <option value="domicilio">A Domicilio</option>
+        </select>
+      </div>
+
+      <div class="filter-group" style="flex: 2;">
+        <label for="searchBox">Buscar (Terapeuta, Ejercicio...):</label>
+        <input type="text" id="searchBox" class="form-control" placeholder="Ej. Dr. Martínez, Rotación..."
+          onkeyup="aplicarFiltros()">
+      </div>
+
+      <button class="btn-clear" onclick="limpiarFiltros()" title="Limpiar Filtros">
+        <i class="fa-solid fa-eraser"></i> Limpiar
+      </button>
+    </div>
+
+    <div class="table-container">
+      <table id="historialTable">
+        <thead>
+          <tr>
+            <th>Fecha y Hora</th>
+            <th>Tipo de Sesión</th>
+            <th>Ejercicio Realizado</th>
+            <th>Terapeuta Asignado</th>
+            <th>Métricas / Observaciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sesion in historial_paciente %}
+          <tr class="sesion-row" data-fecha="{{ sesion.fecha_raw }}" data-tipo="{{ sesion.tipo_sesion }}">
+            <td>
+              <strong>{{ sesion.fecha_formateada }}</strong>
+              <span class="sub-text"><i class="fa-regular fa-clock"></i> {{ sesion.hora }}</span>
+            </td>
+            <td>
+              {% if sesion.tipo_sesion == 'clinica' %}
+              <span class="type-badge type-clinic"><i class="fa-solid fa-hospital"></i> Clínica</span>
+              {% else %}
+              <span class="type-badge type-home"><i class="fa-solid fa-house-medical"></i> Domicilio</span>
+              {% endif %}
+            </td>
+            <td class="searchable-ejercicio">
+              <strong>{{ sesion.nombre_ejercicio }}</strong>
+              <span class="sub-text">Dificultad: {{ sesion.dificultad }}</span>
+            </td>
+            <td class="searchable-terapeuta">
+              <i class="fa-solid fa-user-doctor" style="color: var(--primary);"></i> {{ sesion.terapeuta }}
+            </td>
+            <td>
+              <div style="margin-bottom: 8px;">
+                <span class="eval-badge eval-{{ sesion.evaluacion_clase }}">{{ sesion.evaluacion_texto }}</span>
+              </div>
+              <div class="obs-text">
+                "{{ sesion.observaciones }}"
+              </div>
+            </td>
+          </tr>
+          {% else %}
+
+          <tr class="sesion-row" data-fecha="2026-03-22" data-tipo="clinica">
+            <td><strong>22 Mar 2026</strong><span class="sub-text"><i class="fa-regular fa-clock"></i> 09:00 AM</span>
+            </td>
+            <td><span class="type-badge type-clinic"><i class="fa-solid fa-hospital"></i> Clínica</span></td>
+            <td class="searchable-ejercicio"><strong>Rotación Externa con Banda</strong><span
+                class="sub-text">Dificultad: Medio</span></td>
+            <td class="searchable-terapeuta"><i class="fa-solid fa-user-doctor" style="color: var(--primary);"></i>
+              Dr. Martínez</td>
+            <td>
+              <div style="margin-bottom: 8px;"><span class="eval-badge eval-excelente">Excelente progreso</span></div>
+              <div class="obs-text">"Logró 15 grados más de apertura sin dolor agudo. Excelente disposición al
+                esfuerzo."</div>
+            </td>
+          </tr>
+
+          <tr class="sesion-row" data-fecha="2026-03-18" data-tipo="domicilio">
+            <td><strong>18 Mar 2026</strong><span class="sub-text"><i class="fa-regular fa-clock"></i> 11:30 AM</span>
+            </td>
+            <td><span class="type-badge type-home"><i class="fa-solid fa-house-medical"></i> Domicilio</span></td>
+            <td class="searchable-ejercicio"><strong>Electroterapia TENS</strong><span class="sub-text">Dificultad:
+                Bajo</span></td>
+            <td class="searchable-terapeuta"><i class="fa-solid fa-user-doctor" style="color: var(--primary);"></i>
+              Dra. Gómez</td>
+            <td>
+              <div style="margin-bottom: 8px;"><span class="eval-badge eval-bueno">Buen avance</span></div>
+              <div class="obs-text">"Aplicación de TENS por 20 min. El dolor reportado bajó de 7/10 a 3/10."</div>
+            </td>
+          </tr>
+
+          <tr class="sesion-row" data-fecha="2026-03-15" data-tipo="clinica">
+            <td><strong>15 Mar 2026</strong><span class="sub-text"><i class="fa-regular fa-clock"></i> 10:00 AM</span>
+            </td>
+            <td><span class="type-badge type-clinic"><i class="fa-solid fa-hospital"></i> Clínica</span></td>
+            <td class="searchable-ejercicio"><strong>Elevación Frontal (Asistida)</strong><span
+                class="sub-text">Dificultad: Bajo</span></td>
+            <td class="searchable-terapeuta"><i class="fa-solid fa-user-doctor" style="color: var(--primary);"></i>
+              Dr. Martínez</td>
+            <td>
+              <div style="margin-bottom: 8px;"><span class="eval-badge eval-regular">Avance moderado</span></div>
+              <div class="obs-text">"Presentó ligera fatiga muscular a las 10 repeticiones. Se recomienda mantener hielo
+                en casa."</div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <script>
+    function aplicarFiltros() {
+      // Obtener valores de los filtros
+      const dateStart = document.getElementById('dateStart').value;
+      const dateEnd = document.getElementById('dateEnd').value;
+      const filterType = document.getElementById('filterType').value;
+      const searchText = document.getElementById('searchBox').value.toLowerCase();
+
+      // Obtener todas las filas de la tabla
+      const rows = document.querySelectorAll('.sesion-row');
+
+      rows.forEach(row => {
+        // Datos de la fila actual
+        const rowDate = row.getAttribute('data-fecha');
+        const rowType = row.getAttribute('data-tipo');
+        const textTerapeuta = row.querySelector('.searchable-terapeuta').textContent.toLowerCase();
+        const textEjercicio = row.querySelector('.searchable-ejercicio').textContent.toLowerCase();
+
+        // Lógica de validación
+        let showRow = true;
+
+        // 1. Filtro por Fecha
+        if (dateStart && rowDate < dateStart) showRow = false;
+        if (dateEnd && rowDate > dateEnd) showRow = false;
+
+        // 2. Filtro por Tipo (Clínica/Domicilio)
+        if (filterType !== 'todos' && rowType !== filterType) showRow = false;
+
+        // 3. Filtro por Texto (Búsqueda en terapeuta o ejercicio)
+        if (searchText) {
+          if (!textTerapeuta.includes(searchText) && !textEjercicio.includes(searchText)) {
+            showRow = false;
+          }
+        }
+
+        // Aplicar visibilidad
+        row.style.display = showRow ? '' : 'none';
+      });
+    }
+
+    function limpiarFiltros() {
+      document.getElementById('dateStart').value = '';
+      document.getElementById('dateEnd').value = '';
+      document.getElementById('filterType').value = 'todos';
+      document.getElementById('searchBox').value = '';
+      aplicarFiltros(); // Re-aplicar para mostrar todo
+    }
+  </script>
+</body>
+
+</html>
