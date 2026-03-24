@@ -3,7 +3,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-dark); /* Texto gris oscuro, mejor contraste que el negro puro */
+  color: var(--text-dark);
+  background-color: #E1FAF9;
 }
 
 /* 3. La tarjeta principal (Contenedor del formulario) */
@@ -13,7 +14,8 @@ body {
   max-width: 400px;
   padding: 40px;
   border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* Sombra suave y elegante */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  /* Sombra suave y elegante */
 }
 
 .login-title {
@@ -67,7 +69,8 @@ body {
 .btn-submit {
   width: 100%;
   padding: 12px;
-  background-color: var(--hover-blue); /* Azul médico */
+  background-color: var(--hover-blue);
+  /* Azul médico */
   color: var(--white);
   border: none;
   border-radius: 6px;
@@ -79,7 +82,8 @@ body {
 }
 
 .btn-submit:hover {
-  background-color: #1A4971; /* Azul más oscuro al pasar el mouse */
+  background-color: #1A4971;
+  /* Azul más oscuro al pasar el mouse */
 }
 
 /* 7. Enlace inferior */
@@ -87,7 +91,8 @@ body {
   display: block;
   text-align: center;
   margin-top: 20px;
-  color: #38B2AC; /* Verde azulado (Teal) */
+  color: #38B2AC;
+  /* Verde azulado (Teal) */
   text-decoration: none;
   font-size: 14px;
 }

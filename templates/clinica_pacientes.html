@@ -90,7 +90,7 @@
               {% endif %}
             </td>
             <td>
-              <a href="/expediente/{{ paciente.id_paciente }}" class="btn-action btn-view">
+              <a href="{{url_for('clinica_expedientePaciente')}}" class="btn-action btn-view">
                 <i class="fa-solid fa-folder-open"></i> Ver Expediente
               </a>
             </td>
@@ -103,7 +103,8 @@
             <td>Tendinitis Bicipital<span class="sub-text">Terapia Física</span></td>
             <td><i class="fa-regular fa-calendar"></i> 18 Mar 2026</td>
             <td><span class="badge badge-activo">En Tratamiento</span></td>
-            <td><button class="btn-action btn-view"><i class="fa-solid fa-folder-open"></i> Ver Expediente</button></td>
+            <td><a href="{{url_for('clinica_expedientePaciente')}}" class="btn-action btn-view"><i
+                  class="fa-solid fa-folder-open"></i> Ver Expediente</a></td>
           </tr>
           <tr>
             <td><strong>PAC-1088</strong></td>

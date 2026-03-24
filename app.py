@@ -38,84 +38,89 @@ def login():
     return render_template('login.html', error=error)
 
 
-@app.route('/adminDashboard')
+@app.route('/admin/dashboard')
 def admin_dashboard():
     return render_template('admin_dashboard.html')
 
-@app.route('/adminPaciente')
+@app.route('/admin/paciente')
 def admin_obtenerPacientes():
     # Codigo de la bd donde obtengo la informacion de los pacientes
     return render_template('admin_pacientes.html')
 
-@app.route('/adminBeacons')
+@app.route('/admin/beacons')
 def admin_obtenerBeacons():
     # Codigo de la bd donde obtengo la informacion de los beacons
     return render_template('admin_beacons.html')
 
-@app.route('/adminSesiones')
+@app.route('/admin/sesiones')
 def admin_obtenerSesiones():
     # Codigo de la bd donde obtengo la informacion de los beacons
     return render_template('admin_sesiones.html')
 
-@app.route('/adminReportes')
+@app.route('/admin/reportes')
 def admin_reportes():
     return render_template('admin_reportes.html')
 
-@app.route('/adminTerapeutas')
+@app.route('/admin/terapeutas')
 def admin_obtenerTerapeutas():
     # Codigo de la bd donde obtengo la informacion de los pacientes
     return render_template('admin_terapeutas.html')
 
-@app.route('/adminTerapeutas/registrar')
+@app.route('/admin/terapeutas/registrar')
 def admin_registrarTerapeutas():
     # Codigo de la bd donde se aniade la informacion de los terapeutas
     return render_template('admin_registrarTerapeuta.html')
 
-@app.route('/adminSesiones/registrar')
+@app.route('/admin/sesiones/registrar')
 def admin_registrarSesion():
     # Codigo de la bd donde se aniade la informacion de los terapeutas
     return render_template('admin_registrarSesion.html')
 
-@app.route('/adminPacientes/registrar')
+@app.route('/admin/pacientes/registrar')
 def admin_registrarPacientes():
     # Codigo de la bd donde se aniade la informacion de los terapeutas
     return render_template('admin_registrarPaciente.html')
 
-@app.route('/adminTerapeuta/eliminar/<int:id_paciente>', methods=['POST'])
+@app.route('/admin/terapeuta/eliminar/<int:id_paciente>', methods=['POST'])
 def admin_eliminar_terapeuta(id_paciente):
     # Lógica para eliminar el registro
     return redirect(url_for('obtenerPacientes'))
 
-@app.route('/adminSesion/eliminar/<int:id_paciente>', methods=['POST'])
+@app.route('/admin/sesion/eliminar/<int:id_paciente>', methods=['POST'])
 def admin_eliminar_sesion(id_paciente):
     # Lógica para eliminar el registro
     return redirect(url_for('obtenerPacientes'))
 
-@app.route('/adminPaciente/eliminar/<int:id_paciente>', methods=['POST'])
+@app.route('/admin/paciente/eliminar/<int:id_paciente>', methods=['POST'])
 def admin_eliminar_paciente(id_paciente):
     # Lógica para eliminar el registro
     return redirect(url_for('obtenerPacientes'))
 
-@app.route('/clinicaDashboard')
+@app.route('/clinica/dashboard')
 def clinica_dashboard():
     return render_template('clinica_dashboard.html')
 
-@app.route('/clinicaPacientes')
+@app.route('/clinica/pacientes')
 def clinica_obtenerPacientes():
     return render_template('clinica_pacientes.html')
 
-@app.route('/clinicaSesiones')
+@app.route('/clinica/sesiones')
 def clinica_obtenerSesiones():
     return render_template('clinica_sesiones.html')
 
-@app.route('/clinicaSesionesDomicilio')
+@app.route('/clinica/sesiones/domicilio')
 def clinica_sesionesDomicilio():
     return render_template('clinica_domicilio.html')
 
-@app.route('/sesion/iniciar/')
+@app.route('/clinica/sesion/iniciar/')
 def clinica_expedienteSesion():
     paciente = None
     return render_template('clinica_expediente_sesion.html', paciente=paciente)
+
+@app.route('/clinica/paciente/expediente')
+def clinica_expedientePaciente():
+    paciente = None
+    return render_template('clinica_expediente_paciente.html', paciente=paciente)
 
 @app.route('/paciente/')
 def publica_dashboard():

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expediente - {{ paciente.nombre }}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+  <link rel="stylesheet" href="{{url_for('static',filename='css/clinica_base.css')}}">
+  <link rel="stylesheet" href="{{url_for('static',filename='css/clinica_expediente.css')}}">
+</head>
+
+<body>
+  <!-- Inicio de sidebar-->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h1> Rehab IoT </h1>
+      <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">Portal Médico</p>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{url_for('clinica_dashboard')}}"><i class="fa-solid fa-calendar-day"></i> Mi Agenda
+          Hoy</a></li>
+      <li><a href="{{url_for('clinica_obtenerPacientes')}}" class="active"><i class="fa-solid fa-users"></i> Mis
+          Pacientes</a></li>
+      <li><a href="{{url_for('clinica_obtenerSesiones')}}"><i class="fa-solid fa-file-medical"></i> Historial
+          Sesiones</a></li>
+      <li><a href="{{url_for('clinica_expedienteSesion')}}"><i class="fa-solid fa-file-medical"></i> Sesión Activa</a>
+      </li>
+      <li><a href="{{url_for('clinica_sesionesDomicilio')}}"><i class="fa-solid fa-house-chimney-user"></i> Terapias
+          Domicilio</a></li>
+      <li style="margin-top: auto;"><a href="{{url_for('principal')}}"><i
+            class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión</a></li>
+    </ul>
+  </nav>
+  <!-- Fin de sidebar-->
+  <main class="main-content">
+    <div class="container">
+      <div class="header-card">
+        <div>
+          <h1>{{ paciente.nombre }} {{ paciente.apellido_paterno }} {{ paciente.apellido_materno }}</h1>
+          <p><strong>Diagnóstico:</strong> {{ paciente.diagnostico_principal }} | <strong>Tel:</strong> {{
+            paciente.telefono }}</p>
+        </div>
+        <div>
+          <button
+            style="background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+            + Registrar Nueva Sesión
+          </button>
+        </div>
+      </div>
+
+      <div class="grid-layout">
+        <div class="card">
+          <h3>🗓️ Próxima Sesión Programada</h3>
+          {% if proxima_sesion %}
+          <p><strong>Fecha:</strong> {{ proxima_sesion.fecha.strftime('%d de %B, %Y') }}</p>
+          <p><strong>Horario:</strong> {{ proxima_sesion.hora_inicio.strftime('%H:%M') }} - {{
+            proxima_sesion.hora_fin.strftime('%H:%M') }}</p>
+          <p><strong>Tipo:</strong> <span class="badge">{{ proxima_sesion.tipo_sesion }}</span></p>
+          {% else %}
+          <p style="color: var(--text-muted);">No hay sesiones futuras programadas.</p>
+          {% endif %}
+        </div>
+
+        <div class="card">
+          <h3>🕰️ Última Sesión Realizada</h3>
+          {% if ultima_sesion %}
+          <p><strong>Fecha:</strong> {{ ultima_sesion.fecha.strftime('%d de %B, %Y') }}</p>
+          <p><strong>Asistencia:</strong>
+            {% if ultima_sesion.asistencia %}
+            <span style="color: green; font-weight: bold;">Sí asistió</span>
+            {% else %}
+            <span style="color: red; font-weight: bold;">Falta</span>
+            {% endif %}
+          </p>
+          <p><strong>Observaciones:</strong> {{ ultima_sesion.observaciones_clinicas }}</p>
+          {% else %}
+          <p style="color: var(--text-muted);">Este paciente aún no tiene sesiones registradas.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="grid-layout">
+        <div class="card">
+          <h3>🏋️ Ejercicios Asignados Actualmente</h3>
+          {% if ejercicios_actuales %}
+          <ul class="exercise-list">
+            {% for detalle in ejercicios_actuales %}
+            <li>
+              <div>
+                <strong>{{ detalle.nombre_ejercicio }}</strong><br>
+                <span style="font-size: 0.9em; color: var(--text-muted);">{{ detalle.tipo_ejercicio }}</span>
+              </div>
+              <div style="text-align: right;">
+                <span class="badge">{{ detalle.repeticiones }} reps</span><br>
+                <span style="font-size: 0.85em; color: var(--text-muted);">{{ detalle.duracion }} min</span>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p style="color: var(--text-muted);">No hay ejercicios asignados en su plan actual.</p>
+          {% endif %}
+        </div>
+
+        <div class="card">
+          <h3>📋 Historial de Sesiones Anteriores</h3>
+          {% if sesiones_anteriores %}
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sesion in sesiones_anteriores %}
+              <tr>
+                <td>{{ sesion.fecha.strftime('%d/%m/%Y') }}</td>
+                <td>{{ sesion.tipo_sesion }}</td>
+                <td>
+                  {% if sesion.asistencia %}
+                  ✅ Completada
+                  {% else %}
+                  ❌ Ausente
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <p style="color: var(--text-muted);">No hay historial disponible.</p>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+</body>
+
+</html>
