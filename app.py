@@ -117,6 +117,11 @@ def clinica_expedienteSesion():
     paciente = None
     return render_template('clinica_expediente_sesion.html', paciente=paciente)
 
+@app.route('/clinica/sesion/nueva')
+def clinica_registrarSesion():
+    paciente = None
+    return render_template('clinica_registrarSesion.html')
+
 @app.route('/clinica/paciente/expediente')
 def clinica_expedientePaciente():
     paciente = None
